@@ -1,1 +1,69 @@
-<h1> Hola Mundo v2 </h1> 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>CRM Zaaz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    pre { background: #f6f8fa; padding: 1rem; border-radius: 8px; }
+    button { padding: .6rem 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Bienvenido a CRM Zaaz</h1>
+
+  <section>
+    <h2>GET al Web App (leer)</h2>
+    <button id="btnGet">Probar GET</button>
+    <pre id="outGet">—</pre>
+  </section>
+
+  <section>
+    <h2>POST al Web App (escribir)</h2>
+    <button id="btnPost">Probar POST</button>
+    <pre id="outPost">—</pre>
+  </section>
+
+  <script>
+    // ⚠️ Reemplaza por tu URL de Apps Script (la /exec)
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxa-v6VBa1Bay24KPft08B9jbvTSrx_DsNYWVvIuhve3Rr_gmVVcTEs6wdfc2eG1qHI/exec";
+
+    const outGet  = document.getElementById('outGet');
+    const outPost = document.getElementById('outPost');
+
+    document.getElementById('btnGet').addEventListener('click', async () => {
+      try {
+        // Puedes agregar parámetros: ?action=list&limit=10
+        const url = GAS_URL + "?action=ping&time=" + encodeURIComponent(new Date().toISOString());
+        const res = await fetch(url, { method: 'GET' });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        outGet.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        outGet.textContent = "Error GET: " + err.message;
+      }
+    });
+
+    document.getElementById('btnPost').addEventListener('click', async () => {
+      try {
+        const payload = {
+          action: "addContact",
+          contact: { name: "Cliente Demo", email: "demo@example.com" },
+          // apiKey: "tu_token_opcional"
+        };
+        const res = await fetch(GAS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        outPost.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        outPost.textContent = "Error POST: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
